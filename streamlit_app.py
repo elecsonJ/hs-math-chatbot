@@ -41,7 +41,7 @@ from graph_loader import load_graph, generate_schema_info
 from visualize_graph import visualize_ontology
 
 # Page Config
-st.set_page_config(page_title="Math Ontology Bot", layout="wide")
+st.set_page_config(page_title="K-Math Ontology Chatbot", layout="wide")
 
 # Paths
 TBOX_PATH = "data/ontology/math_tbox.ttl"
@@ -92,7 +92,7 @@ except Exception as e:
     st.stop()
 
 # Title
-st.title("📐 Math Ontology Chatbot")
+st.title("📐 K-Math Ontology Chatbot")
 
 # Chat UI - Main Area
 # Chat History
