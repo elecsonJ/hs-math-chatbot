@@ -2,3 +2,4 @@ streamlit
 rdflib
 google-generativeai
 python-dotenv
+pyvis
