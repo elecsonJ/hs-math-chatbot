@@ -18,33 +18,25 @@ MODEL_NAME = "gemini-2.0-flash-exp"
 model = genai.GenerativeModel(MODEL_NAME, generation_config={"response_mime_type": "application/json"})
 
 def generate_sparql(question, schema_info):
-    """
-    Generates a SPARQL query based on the user's question and schema info.
-    Goal: Retrieve relevant concepts and their prerequisites/relationships.
-    """
-    
     prompt = f"""
     You are an expert Math Ontology Engineer.
-    Your task is to convert a natural language question into a SPARQL query to retrieve relevant math concepts and their prerequisites.
+    Your task is to convert a natural language question into a SPARQL query.
     
     ### Ontology Schema (TBox)
     {schema_info}
     
     ### Guidelines
     1. **Context**: The Ontology ONLY contains **High School Math** concepts.
-    2. **Concept Mapping (CRITICAL)**:
-       - If the user asks about a **High School Concept** (e.g., "미분계수", "합성함수"):
-         -> In this case, just query for that concept directly as usual.
-       - If the user asks about a **University/Advanced Concept** (e.g., "테일러 급수", "선형대수", "다변수 미분"):
-         -> **DO NOT** query for "Taylor Series" (as it's not in the ontology).
-         -> **INFER** the relevant High School prerequisites (e.g., "급수", "합성함수의 미분", "이계도함수").
-         -> Query for **THOSE inferred concepts** using Regex OR (e.g., "Term1|Term2").
+    2. **Concept Mapping**:
+       - High School Concept: Query directly.
+       - University/Advanced Concept: **INFER** high school prerequisites (e.g., "Taylor Series" -> "Series|Differentiation") and query those.
     
-    3. **Output Goal**:
-       - Retrieve the `Label`, `Subject`, `Chapter` of the concepts you identified.
-    
-    4. **Search Strategy**:
-       - Use `FILTER(regex(?label, "Term1|Term2", "i"))`.
+    3. **Out-of-Curriculum Detection (NEW)**:
+       - If the user asks about a concept that is NOT in the High School curriculum:
+       - **You MUST include the exact phrase "OUT_OF_CURRICULUM" in your `explanation` field.**
+       - Even if it's out of curriculum, still provide the SPARQL query for relevant high school prerequisites to be helpful.
+
+    4. **Output Goal**: Retrieve `Label`, `Subject`, `Chapter`. Use `FILTER(regex(?label, "Term1|Term2", "i"))`.
     
     ### Example 1 (High School Query)
     Question: "합성함수 미분이 뭐야?"
@@ -98,6 +90,7 @@ def execute_sparql(query, graph):
 def generate_answer(question, raw_data, sparql_explanation):
     """
     Generates a structured JSON answer with 'answer' and 'evidence'.
+    Checks if the concept is out of curriculum based on sparql_explanation.
     """
     
     data_summary = json.dumps(raw_data, ensure_ascii=False) if raw_data else "No data found."
@@ -113,33 +106,43 @@ def generate_answer(question, raw_data, sparql_explanation):
     (Logic: {sparql_explanation})
     
     ### Instructions
-    1. **Analyze**: Look at the retrieved data (Concepts, Prerequisites, etc.).
-    2. **Answer**: Write a helpful, empathetic response in Korean. 
-       - If the user asks about a difficult concept, explain it briefly and suggest checking the prerequisites found in the data.
-    3. **Evidence**: Construct a list of evidence based strictly on the 'Retrieved Knowledge'.
-       - Map the data to: subject, chapter, concept. 
-       - If specific hierarchy info (subject/chapter) is missing in data, infer or leave as "Unknown".
+    1. **Analyze**: Carefully evaluate the retrieved data (Concepts, Prerequisites, etc.) and the provided Logic string.
+    
+    2. **Curriculum Check (CRITICAL)**:
+       - If the `Logic` string contains the phrase "OUT_OF_CURRICULUM":
+       - **The very first sentence of your 'answer' MUST be exactly: "교육과정 외의 내용입니다."**
+       - Following that sentence, kindly explain why the concept belongs to an advanced/university curriculum and how the retrieved high school prerequisites are related to it.
+    
+    3. **Answer Style & Language**: 
+       - **Language**: Write the entire 'answer' in **Korean**.
+       - **Tone**: Maintain an encouraging, empathetic, and helpful mentor persona.
+       - **Guidance**: Even if the direct answer is not in the data, use the `Retrieved Knowledge` to suggest which high school foundations the student should review first.
+    
+    4. **Evidence Construction**:
+       - Create an 'evidence' list based strictly on the 'Retrieved Knowledge'.
+       - Map the data to: subject, chapter, concept, and desc (short reason for relevance).
+       - If hierarchy info (subject/chapter) is missing, infer it from the context or use "Unknown".
        
     ### Output Format (JSON)
-    Or strictly strictly adhere to this Typescript Interface:
+    Strictly adhere to this Typescript Interface:
     interface Response {{
-       answer: string; // The main chat message
-       evidence: {{
-           subject: string;
-           chapter: string;
-           concept: string;
-           desc?: string; // Short reason why this is relevant (e.g. "Prerequisite")
-       }}[];
+        answer: string; // Must start with "교육과정 외의 내용입니다." if applicable.
+        evidence: {{
+            subject: string;
+            chapter: string;
+            concept: string;
+            desc?: string; // e.g., "Prerequisite for this advanced topic"
+        }}[];
     }}
     """
     
     try:
         response = model.generate_content(prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
-        # Ensure it parses
         result = json.loads(text)
         return result
     except Exception as e:
+        print(f"[ERROR] Answer Generation Failed: {e}")
         return {
             "answer": f"답변 생성 중 오류가 발생했습니다. ({e})",
             "evidence": []

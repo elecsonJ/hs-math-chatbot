@@ -8,19 +8,27 @@
 # Classes
 # -----------------------------------------------------------------------------
 
+:LearningUnit a owl:Class ;
+    rdfs:label "학습 단위"@ko ;
+    rdfs:comment "교과목, 단원, 개념을 아우르는 상위 클래스" .
+
 :Subject a owl:Class ;
+    rdfs:subClassOf :LearningUnit ;
     rdfs:label "교과목"@ko ;
     rdfs:comment "고등학교 수학 교과목 (예: 수학I, 수학II, 미적분)" .
 
 :Chapter a owl:Class ;
+    rdfs:subClassOf :LearningUnit ;
     rdfs:label "대단원"@ko ;
     rdfs:comment "교과목 하위의 대단원 (예: 다항식, 미분법)" .
 
 :Section a owl:Class ;
+    rdfs:subClassOf :LearningUnit ;
     rdfs:label "중/소단원"@ko ;
     rdfs:comment "대단원 하위의 소단원 (예: 미분계수, 도함수)" .
 
 :Concept a owl:Class ;
+    rdfs:subClassOf :LearningUnit ;
     rdfs:label "수학 개념"@ko ;
     rdfs:comment "학습해야 할 최소 단위의 개념 (예: 합성함수의 미분, 평균값 정리)" .
 
@@ -48,12 +56,12 @@
 # -----------------------------------------------------------------------------
 
 :prerequisiteOf a owl:ObjectProperty ;
-    rdfs:domain :Concept ;
-    rdfs:range :Concept ;
+    rdfs:domain :LearningUnit ;
+    rdfs:range :LearningUnit ;
     rdfs:label "선수 학습 관계"@ko ;
     rdfs:comment "A prerequisiteOf B means A must be learned before B." .
 
 :relatedTo a owl:ObjectProperty, owl:SymmetricProperty ;
-    rdfs:domain :Concept ;
-    rdfs:range :Concept ;
+    rdfs:domain :LearningUnit ;
+    rdfs:range :LearningUnit ;
     rdfs:label "연관 관계"@ko .

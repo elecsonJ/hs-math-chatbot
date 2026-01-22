@@ -3,20 +3,30 @@ from pyvis.network import Network
 import os
 import webbrowser
 
-def visualize_ontology():
+def visualize_ontology(graph=None, highlight_labels=None, output_file="math_graph.html", return_html_str=False):
     # 1. Load the Graph
-    g = rdflib.Graph()
-    try:
-        g.parse("data/ontology/math_tbox.ttl", format="turtle")
-        g.parse("data/knowledge_graph/math_abox.ttl", format="turtle")
-        print("[INFO] Graph loaded successfully.")
-    except Exception as e:
-        print(f"[ERROR] Failed to load graph: {e}")
-        return
+    if graph:
+        g = graph
+        # print("[INFO] Using provided in-memory graph.")
+    else:
+        g = rdflib.Graph()
+        try:
+            g.parse("data/ontology/math_tbox.ttl", format="turtle")
+            g.parse("data/knowledge_graph/math_abox.ttl", format="turtle")
+            print("[INFO] Graph loaded successfully.")
+        except Exception as e:
+            print(f"[ERROR] Failed to load graph: {e}")
+            return
+
+    # Normalize highlight_labels for easier matching
+    if highlight_labels:
+        highlight_labels = set(highlight_labels)
+    else:
+        highlight_labels = set()
 
     # 2. Init Pyvis Network (Style: White Background like the Notebook)
     # cdn_resources='in_line' embeds the scripts into the HTML, making it standalone (fixes CDN/CORS issues)
-    net = Network(height="750px", width="100%", bgcolor="#ffffff", font_color="black", select_menu=True, directed=True, cdn_resources="in_line")
+    net = Network(height="800px", width="100%", bgcolor="#ffffff", font_color="black", select_menu=True, directed=True, cdn_resources="in_line")
     
     # Notebook specific options injection
     net.set_options("""
@@ -78,8 +88,11 @@ def visualize_ontology():
         "Concept": {"color": "#1A535C", "shape": "dot", "size": 15},        # Dot for Concept
         "Other":   {"color": "#97C2FC", "shape": "text", "size": 10}
     }
+    
+    # Highlight Style
+    highlight_style = {"color": "#FF0000", "shape": "star", "size": 35, "borderWidth": 3, "borderColor": "#000000"}
 
-    print("[INFO] Processing Nodes...")
+    # print("[INFO] Processing Nodes...")
     existing_nodes = set()
     
     for s in g.subjects(unique=True):
@@ -88,7 +101,13 @@ def visualize_ontology():
         
         lbl = get_label(s)
         group = get_group(s)
-        style = styles.get(group, styles["Other"])
+        
+        # Determine Style
+        if lbl in highlight_labels:
+            style = highlight_style
+            # print(f"Highlighting node: {lbl}")
+        else:
+            style = styles.get(group, styles["Other"])
         
         # Tooltip
         title = f"<b>{lbl}</b><br>Type: {group}<br>URI: {s}"
@@ -96,11 +115,19 @@ def visualize_ontology():
         if comment:
              title += f"<br><i>{comment}</i>"
 
+        # Check if style has custom border logic (highlight)
+        extra_args = {}
+        if "borderWidth" in style:
+            extra_args["borderWidth"] = style["borderWidth"]
+            extra_args["color"] = {"background": style["color"], "border": style.get("borderColor", "black")}
+        else:
+            extra_args["color"] = style["color"]
+
         net.add_node(str_s, label=lbl, title=title, 
-                     color=style["color"], shape=style["shape"], size=style["size"], group=group)
+                     shape=style["shape"], size=style["size"], group=group, **extra_args)
         existing_nodes.add(str_s)
 
-    print("[INFO] Processing Edges...")
+    # print("[INFO] Processing Edges...")
     for s, p, o in g:
         if not isinstance(s, rdflib.URIRef) or not isinstance(o, rdflib.URIRef): continue
         str_s = str(s)
@@ -118,6 +145,10 @@ def visualize_ontology():
         edge_color = "#bdbdbd"
         dashes = False
         
+        # Highlight Logic for Edges? 
+        # Optional: if both nodes are highlighted, highlight edge too?
+        # For now, keep edge styles simple to avoid clutter
+        
         if "prerequisiteOf" in prop_name:
             edge_color = "#FF4040" # Red for prerequisite
             width = 2
@@ -127,15 +158,16 @@ def visualize_ontology():
 
         net.add_edge(str_s, str_o, title=prop_name, color=edge_color, width=width, dashes=dashes)
 
-    # 5. Save and Open
-    output_file = "math_graph.html"
-    net.save_graph(output_file)
-    print(f"[SUCCESS] Visualization saved to {output_file}")
-    
-    try:
-        webbrowser.open('file://' + os.path.realpath(output_file))
-    except:
-        pass
+    # 5. Output
+    if return_html_str:
+        return net.generate_html()
+    else:
+        net.save_graph(output_file)
+        print(f"[SUCCESS] Visualization saved to {output_file}")
+        try:
+            webbrowser.open('file://' + os.path.realpath(output_file))
+        except:
+            pass
 
 if __name__ == "__main__":
     visualize_ontology()

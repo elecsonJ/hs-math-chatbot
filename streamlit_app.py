@@ -38,6 +38,7 @@ except ValueError as e:
     st.stop()
 
 from graph_loader import load_graph, generate_schema_info
+from visualize_graph import visualize_ontology
 
 # Page Config
 st.set_page_config(page_title="Math Ontology Bot", layout="wide")
@@ -52,6 +53,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "graph_loaded" not in st.session_state:
     st.session_state.graph_loaded = False
+if "viz_html" not in st.session_state:
+    st.session_state.viz_html = None
 
 # Sidebar
 with st.sidebar:
@@ -60,11 +63,17 @@ with st.sidebar:
     
     if st.button("Reload Knowledge Graph"):
         st.session_state.graph_loaded = False
+        st.session_state.viz_html = None # Reset visualization
         st.experimental_rerun()
 
     st.divider()
     st.subheader("Visualization")
-    if os.path.exists(VISUALIZATION_PATH):
+    
+    # Priority: 1. Dynamic HTML (from session), 2. Static File
+    if st.session_state.viz_html:
+        st.components.v1.html(st.session_state.viz_html, height=300, scrolling=True)
+        st.caption("Dynamic Context Visualization")
+    elif os.path.exists(VISUALIZATION_PATH):
         with open(VISUALIZATION_PATH, 'r', encoding='utf-8') as f:
             html_data = f.read()
         st.components.v1.html(html_data, height=300, scrolling=True)
@@ -121,6 +130,22 @@ if prompt := st.chat_input("Ask a math question..."):
         
         answer_text = final_res.get("answer", "No answer generated.")
         evidence_data = final_res.get("evidence", [])
+        
+        # 4. Update Visualization (Highlighting)
+        if evidence_data:
+            highlight_nodes = []
+            for item in evidence_data:
+                # Add Concept/Subject/Chapter labels to highlight list
+                if item.get("concept"): highlight_nodes.append(item["concept"])
+                if item.get("chapter"): highlight_nodes.append(item["chapter"])
+                if item.get("subject"): highlight_nodes.append(item["subject"])
+            
+            # Generate new HTML with highlights
+            try:
+                new_html = visualize_ontology(graph=full_graph, highlight_labels=highlight_nodes, return_html_str=True)
+                st.session_state.viz_html = new_html
+            except Exception as e:
+                print(f"Visualization Error: {e}")
 
     # Assistant Message
     st.session_state.chat_history.append({
@@ -135,3 +160,6 @@ if prompt := st.chat_input("Ask a math question..."):
             with st.expander("🔍 Evidence (Ontology Trace)"):
                 st.table(evidence_data) # Use Table for cleaner view than JSON
                 st.caption(f"Logic: {sparql_res.get('explanation', '')}")
+            
+    # Rerun to update sidebar immediately
+    st.rerun()
