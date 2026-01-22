@@ -10,12 +10,33 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 # [Cloud Fix] Inject Secrets to Environment for reasoning_engine.py
 # Streamlit Cloud uses st.secrets, but our engine checks os.getenv
 try:
+    # Check if we are on Streamlit Cloud (st.secrets works)
     if "GOOGLE_API_KEY" in st.secrets:
         os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 except FileNotFoundError:
-    pass # Running locally with .env
+    # Running locally without .streamlit/secrets.toml
+    # We rely on .env (loaded by reasoning_engine) or existing os.environ
+    pass
+except Exception as e:
+    # Any other error with secrets?
+    print(f"Warning: Issue accessing st.secrets: {e}")
 
-from reasoning_engine import generate_sparql, execute_sparql, generate_answer
+# Critical Check BEFORE importing the engine
+# If the key is still missing (neither in secrets nor .env loaded yet), we should check.
+# Note: reasoning_engine loads .env itself, but for Cloud we need to be sure.
+if "GOOGLE_API_KEY" not in os.environ and "GOOGLE_API_KEY" not in st.secrets:
+    # If we are local, reasoning_engine might find .env, so we can try-except the import
+    pass
+
+try:
+    from reasoning_engine import generate_sparql, execute_sparql, generate_answer
+except ValueError as e:
+    st.error("🚨 **Deployment Error: Google API Key Missing**")
+    st.warning("Please configure your Secrets in Streamlit Cloud Settings.")
+    st.code('GOOGLE_API_KEY = "AIzaSy..."', language="toml")
+    st.info("Go to 'Manage app' > 'Settings' > 'Secrets' and paste your key.")
+    st.stop()
+
 from graph_loader import load_graph, generate_schema_info
 
 # Page Config
