@@ -61,10 +61,7 @@
     rdfs:label "선수 학습 관계"@ko ;
     rdfs:comment "A prerequisiteOf B means A must be learned before B." .
 
-:relatedTo a owl:ObjectProperty, owl:SymmetricProperty ;
-    rdfs:domain :LearningUnit ;
-    rdfs:range :LearningUnit ;
-    rdfs:label "연관 관계"@ko .
+
 
 # -----------------------------------------------------------------------------
 # Datatype Properties (Attributes)
