@@ -156,33 +156,47 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         
         if prop_name == "type": continue
         
-        # Visual Style for Edges
+        # Default Visual Style for Edges
         width = 1
         edge_color = "#bdbdbd"
         dashes = False
         
         if highlight_labels:
-            # In Focus Mode, dim edges that are not connecting two highlighted nodes?
-            # Or at least dim edges connected to grey nodes.
-            # Simple heuristic: if either source or target is NOT highlighted, dim the edge.
+            # Focus Mode Logic
             s_lbl = get_label(s)
             o_lbl = get_label(o)
             
-            if s_lbl in highlight_labels and o_lbl in highlight_labels:
-                # Keep original color/stronger
-                pass 
-            else:
-                # Dim it
-                edge_color = "#f0f0f0"
+            s_high = s_lbl in highlight_labels
+            o_high = o_lbl in highlight_labels
+            
+            if s_high and o_high:
+                # [Strong] Connection between two relevant nodes
+                # Preserve semantic colors but make them pop
+                if "prerequisiteOf" in prop_name:
+                    edge_color = "#FF0000" # Bright Red
+                    width = 3
+                elif "has" in prop_name:
+                    edge_color = "#555555" # Dark Grey
+                    width = 3
+                else:
+                    edge_color = "#000000"
+                    width = 2
+            elif s_high or o_high:
+                # [Context] Connection to a relevant node
+                edge_color = "#aaaaaa" # Visible Medium Grey
                 width = 1
-        
-        # Override original logic only if NOT dimmed, or apply color only if relevant
-        if edge_color != "#f0f0f0":
+                dashes = True # Dotted line for context
+            else:
+                # [Dimmed] Background noise
+                edge_color = "#eeeeee" # Very Light Grey (barely visible to reduce clutter)
+                width = 1
+        else:
+            # Standard Mode (No Highlight)
             if "prerequisiteOf" in prop_name:
-                edge_color = "#FF4040" # Red for prerequisite
+                edge_color = "#FF4040" 
                 width = 2
             elif "has" in prop_name:
-                edge_color = "#848484" # Darker Grey for hierarchy
+                edge_color = "#848484" 
                 width = 3
 
         net.add_edge(str_s, str_o, title=prop_name, color=edge_color, width=width, dashes=dashes)

@@ -101,7 +101,7 @@ for msg in st.session_state.chat_history:
         st.markdown(msg["content"])
         if "evidence" in msg and msg["evidence"]:
             with st.expander("🔍 Evidence"):
-                st.json(msg["evidence"])
+                st.table(msg["evidence"])
 
 # Chat Input (Pinned to bottom)
 if prompt := st.chat_input("Ask a math question..."):
