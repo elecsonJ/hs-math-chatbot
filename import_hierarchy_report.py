@@ -3,11 +3,11 @@ import rdflib
 from rdflib import Namespace, RDF, RDFS, Literal
 
 # Configuration
-INPUT_FILE = "data/report/hierarchy_report.md"
+INPUT_FILE = "data/report/hierarchy_report_v2.md"
 OUTPUT_FILE = "data/knowledge_graph/math_abox.ttl"
 
 # Namespaces
-NS = Namespace("http://snu.ac.kr/math/")
+NS = Namespace("http://math.bot/ontology/")
 OWL = Namespace("http://www.w3.org/2002/07/owl#")
 XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
 

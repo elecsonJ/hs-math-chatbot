@@ -7,8 +7,6 @@
 
 :Sub_02 a :Subject ;
     rdfs:label "공통수학1" ;
-    :classification "공통" ;
-    :grade "1학년 1학기" ;
     :hasChapter :Chap_002,
         :Chap_003,
         :Chap_004,
@@ -16,48 +14,36 @@
 
 :Sub_03 a :Subject ;
     rdfs:label "공통수학2" ;
-    :classification "공통" ;
-    :grade "1학년 2학기" ;
     :hasChapter :Chap_006,
         :Chap_007,
         :Chap_008 .
 
 :Sub_04 a :Subject ;
     rdfs:label "기하" ;
-    :classification "진로선택" ;
-    :grade "2학년 이후" ;
     :hasChapter :Chap_009,
         :Chap_010,
         :Chap_011 .
 
 :Sub_05 a :Subject ;
     rdfs:label "대수" ;
-    :classification "일반선택" ;
-    :grade "2학년 1학기" ;
     :hasChapter :Chap_012,
         :Chap_013,
         :Chap_014 .
 
 :Sub_06 a :Subject ;
     rdfs:label "미적분1" ;
-    :classification "일반선택" ;
-    :grade "2학년 2학기" ;
     :hasChapter :Chap_015,
         :Chap_016,
         :Chap_017 .
 
 :Sub_07 a :Subject ;
     rdfs:label "미적분2" ;
-    :classification "진로선택" ;
-    :grade "2학년 이후" ;
     :hasChapter :Chap_018,
         :Chap_019,
         :Chap_020 .
 
 :Sub_08 a :Subject ;
     rdfs:label "확률과 통계" ;
-    :classification "일반선택" ;
-    :grade "2학년 이후" ;
     :hasChapter :Chap_021,
         :Chap_022,
         :Chap_023 .
@@ -128,18 +114,18 @@
     rdfs:label "지수로그" ;
     :hasSection :Sec_030,
         :Sec_031,
-        :Sec_032,
-        :Sec_033 .
+        :Sec_032 .
 
 :Chap_013 a :Chapter ;
     rdfs:label "삼각함수" ;
-    :hasSection :Sec_034,
-        :Sec_035,
-        :Sec_036 .
+    :hasSection :Sec_033,
+        :Sec_034,
+        :Sec_035 .
 
 :Chap_014 a :Chapter ;
     rdfs:label "수열" ;
-    :hasSection :Sec_037,
+    :hasSection :Sec_036,
+        :Sec_037,
         :Sec_038,
         :Sec_039 .
 
@@ -493,97 +479,97 @@
     rdfs:label "포물선의 접선의 방정식" .
 
 :Con_0101 a :Concept ;
-    rdfs:label "거듭제곱" .
-
-:Con_0102 a :Concept ;
-    rdfs:label "거듭제곱근" .
-
-:Con_0103 a :Concept ;
-    rdfs:label "지수" .
-
-:Con_0104 a :Concept ;
-    rdfs:label "지수함수의 그래프" .
-
-:Con_0105 a :Concept ;
-    rdfs:label "지수함수의 방부등식" .
-
-:Con_0106 a :Concept ;
-    rdfs:label "지수함수의 최대최소" .
-
-:Con_0107 a :Concept ;
-    rdfs:label "로그" .
-
-:Con_0108 a :Concept ;
-    rdfs:label "상용로그" .
-
-:Con_0109 a :Concept ;
-    rdfs:label "로그함수의 그래프" .
-
-:Con_0110 a :Concept ;
-    rdfs:label "로그함수의 방부등식" .
-
-:Con_0111 a :Concept ;
-    rdfs:label "로그함수의 최대최소" .
-
-:Con_0112 a :Concept ;
-    rdfs:label "사인" .
-
-:Con_0113 a :Concept ;
-    rdfs:label "일반각" .
-
-:Con_0114 a :Concept ;
-    rdfs:label "코사인" .
-
-:Con_0115 a :Concept ;
-    rdfs:label "탄젠트" .
-
-:Con_0116 a :Concept ;
-    rdfs:label "호도법" .
-
-:Con_0117 a :Concept ;
-    rdfs:label "삼각함수 방부등식" .
-
-:Con_0118 a :Concept ;
-    rdfs:label "삼각함수의 그래프" .
-
-:Con_0119 a :Concept ;
-    rdfs:label "삼각함수의 최대최소" .
-
-:Con_0120 a :Concept ;
-    rdfs:label "사인법칙" .
-
-:Con_0121 a :Concept ;
-    rdfs:label "삼각형의 넓이" .
-
-:Con_0122 a :Concept ;
-    rdfs:label "코사인법칙" .
-
-:Con_0123 a :Concept ;
-    rdfs:label "등차수열" .
-
-:Con_0124 a :Concept ;
-    rdfs:label "등차수열의 합" .
-
-:Con_0125 a :Concept ;
     rdfs:label "등비수열" .
 
-:Con_0126 a :Concept ;
+:Con_0102 a :Concept ;
     rdfs:label "등비수열의 합" .
 
-:Con_0127 a :Concept ;
+:Con_0103 a :Concept ;
+    rdfs:label "등차수열" .
+
+:Con_0104 a :Concept ;
+    rdfs:label "등차수열의 합" .
+
+:Con_0105 a :Concept ;
+    rdfs:label "로그" .
+
+:Con_0106 a :Concept ;
+    rdfs:label "상용로그" .
+
+:Con_0107 a :Concept ;
+    rdfs:label "로그함수의 그래프" .
+
+:Con_0108 a :Concept ;
+    rdfs:label "로그함수의 방부등식" .
+
+:Con_0109 a :Concept ;
+    rdfs:label "로그함수의 최대최소" .
+
+:Con_0110 a :Concept ;
+    rdfs:label "사인" .
+
+:Con_0111 a :Concept ;
+    rdfs:label "일반각" .
+
+:Con_0112 a :Concept ;
+    rdfs:label "코사인" .
+
+:Con_0113 a :Concept ;
+    rdfs:label "탄젠트" .
+
+:Con_0114 a :Concept ;
+    rdfs:label "호도법" .
+
+:Con_0115 a :Concept ;
+    rdfs:label "삼각함수 방부등식" .
+
+:Con_0116 a :Concept ;
+    rdfs:label "삼각함수의 그래프" .
+
+:Con_0117 a :Concept ;
+    rdfs:label "삼각함수의 최대최소" .
+
+:Con_0118 a :Concept ;
+    rdfs:label "사인법칙" .
+
+:Con_0119 a :Concept ;
+    rdfs:label "삼각형의 넓이" .
+
+:Con_0120 a :Concept ;
+    rdfs:label "코사인법칙" .
+
+:Con_0121 a :Concept ;
     rdfs:label "시그마" .
 
-:Con_0128 a :Concept ;
+:Con_0122 a :Concept ;
     rdfs:label "여러가지 수열의 합" .
 
-:Con_0129 a :Concept ;
+:Con_0123 a :Concept ;
     rdfs:label "자연수의 거듭제곱의 합" .
 
-:Con_0130 a :Concept ;
+:Con_0124 a :Concept ;
     rdfs:label "수열의 귀납적 정의" .
 
-:Con_0131 a :Concept ;
+:Con_0125 a :Concept ;
     rdfs:label "수학적 귀납법" .
+
+:Con_0126 a :Concept ;
+    rdfs:label "거듭제곱" .
+
+:Con_0127 a :Concept ;
+    rdfs:label "거듭제곱근" .
+
+:Con_0128 a :Concept ;
+    rdfs:label "지수" .
+
+:Con_0129 a :Concept ;
+    rdfs:label "지수함수의 그래프" .
+
+:Con_0130 a :Concept ;
+    rdfs:label "지수함수의 방부등식" .
+
+:Con_0131 a :Concept ;
+    rdfs:label "지수함수의 최대최소" .
 
 :Con_0132 a :Concept ;
     rdfs:label "방정식과 부등식에서의 활용" .
@@ -930,50 +916,32 @@
     :prerequisiteOf :Sec_026 .
 
 :Sec_030 a :Section ;
-    rdfs:label "지수" ;
+    rdfs:label "등차수열과 등비수열" ;
     :hasConcept :Con_0101,
         :Con_0102,
-        :Con_0103 ;
-    :prerequisiteOf :Sec_031,
-        :Sec_032 .
-
-:Sec_034 a :Section ;
-    rdfs:label "삼각함수" ;
-    :hasConcept :Con_0112,
-        :Con_0113,
-        :Con_0114,
-        :Con_0115,
-        :Con_0116 ;
-    :prerequisiteOf :Sec_035,
-        :Sec_048 .
-
-:Sec_037 a :Section ;
-    rdfs:label "등차수열과 등비수열" ;
-    :hasConcept :Con_0123,
-        :Con_0124,
-        :Con_0125,
-        :Con_0126 ;
-    :prerequisiteOf :Sec_038,
-        :Sec_039,
+        :Con_0103,
+        :Con_0104 ;
+    :prerequisiteOf :Sec_036,
+        :Sec_037,
         :Sec_052 .
 
-:Sec_047 a :Section ;
-    rdfs:label "도함수의 활용" ;
-    :hasConcept :Con_0157,
-        :Con_0158,
-        :Con_0159,
-        :Con_0160,
-        :Con_0161,
-        :Con_0162,
-        :Con_0163 .
+:Sec_033 a :Section ;
+    rdfs:label "삼각함수" ;
+    :hasConcept :Con_0110,
+        :Con_0111,
+        :Con_0112,
+        :Con_0113,
+        :Con_0114 ;
+    :prerequisiteOf :Sec_034,
+        :Sec_048 .
 
-:Sec_054 a :Section ;
-    rdfs:label "정적분의 활용" ;
-    :hasConcept :Con_0184,
-        :Con_0185,
-        :Con_0186,
-        :Con_0187,
-        :Con_0188 .
+:Sec_038 a :Section ;
+    rdfs:label "지수" ;
+    :hasConcept :Con_0126,
+        :Con_0127,
+        :Con_0128 ;
+    :prerequisiteOf :Sec_031,
+        :Sec_039 .
 
 :Sec_006 a :Section ;
     rdfs:label "여러 가지 방정식" ;
@@ -1064,48 +1032,48 @@
         :Con_0100 .
 
 :Sec_031 a :Section ;
-    rdfs:label "지수함수" ;
-    :hasConcept :Con_0104,
-        :Con_0105,
+    rdfs:label "로그" ;
+    :hasConcept :Con_0105,
         :Con_0106 ;
-    :prerequisiteOf :Sec_050 .
+    :prerequisiteOf :Sec_032 .
 
 :Sec_032 a :Section ;
-    rdfs:label "로그" ;
-    :hasConcept :Con_0107,
-        :Con_0108 ;
-    :prerequisiteOf :Sec_033 .
-
-:Sec_033 a :Section ;
     rdfs:label "로그함수" ;
-    :hasConcept :Con_0109,
-        :Con_0110,
-        :Con_0111 ;
+    :hasConcept :Con_0107,
+        :Con_0108,
+        :Con_0109 ;
     :prerequisiteOf :Sec_050 .
 
-:Sec_035 a :Section ;
+:Sec_034 a :Section ;
     rdfs:label "삼각함수의 그래프" ;
-    :hasConcept :Con_0117,
-        :Con_0118,
-        :Con_0119 ;
-    :prerequisiteOf :Sec_036 .
+    :hasConcept :Con_0115,
+        :Con_0116,
+        :Con_0117 ;
+    :prerequisiteOf :Sec_035 .
+
+:Sec_035 a :Section ;
+    rdfs:label "삼각함수의 활용" ;
+    :hasConcept :Con_0118,
+        :Con_0119,
+        :Con_0120 .
 
 :Sec_036 a :Section ;
-    rdfs:label "삼각함수의 활용" ;
-    :hasConcept :Con_0120,
-        :Con_0121,
-        :Con_0122 .
-
-:Sec_038 a :Section ;
     rdfs:label "수열의 합" ;
-    :hasConcept :Con_0127,
-        :Con_0128,
-        :Con_0129 .
+    :hasConcept :Con_0121,
+        :Con_0122,
+        :Con_0123 .
+
+:Sec_037 a :Section ;
+    rdfs:label "수학적 귀납법" ;
+    :hasConcept :Con_0124,
+        :Con_0125 .
 
 :Sec_039 a :Section ;
-    rdfs:label "수학적 귀납법" ;
-    :hasConcept :Con_0130,
-        :Con_0131 .
+    rdfs:label "지수함수" ;
+    :hasConcept :Con_0129,
+        :Con_0130,
+        :Con_0131 ;
+    :prerequisiteOf :Sec_050 .
 
 :Sec_041 a :Section ;
     rdfs:label "미분계수와 도함수" ;
@@ -1113,13 +1081,8 @@
         :Con_0141,
         :Con_0142 ;
     :prerequisiteOf :Sec_040,
+        :Sec_047,
         :Sec_049 .
-
-:Sec_042 a :Section ;
-    rdfs:label "부정적분" ;
-    :hasConcept :Con_0143,
-        :Con_0144 ;
-    :prerequisiteOf :Sec_043 .
 
 :Sec_043 a :Section ;
     rdfs:label "정적분" ;
@@ -1128,6 +1091,7 @@
         :Con_0147 ;
     :prerequisiteOf :Sec_044,
         :Sec_053,
+        :Sec_054,
         :Sec_059 .
 
 :Sec_044 a :Section ;
@@ -1164,6 +1128,7 @@
         :Con_0170,
         :Con_0171 ;
     :prerequisiteOf :Sec_040,
+        :Sec_047,
         :Sec_055 .
 
 :Sec_051 a :Section ;
@@ -1184,6 +1149,14 @@
     rdfs:label "여러 가지 함수의 적분" ;
     :hasConcept :Con_0182,
         :Con_0183 .
+
+:Sec_054 a :Section ;
+    rdfs:label "정적분의 활용" ;
+    :hasConcept :Con_0184,
+        :Con_0185,
+        :Con_0186,
+        :Con_0187,
+        :Con_0188 .
 
 :Sec_055 a :Section ;
     rdfs:label "치환적분법과 부분적분법" ;
@@ -1243,6 +1216,23 @@
         :Con_0137,
         :Con_0138,
         :Con_0139 ;
+    :prerequisiteOf :Sec_042 .
+
+:Sec_042 a :Section ;
+    rdfs:label "부정적분" ;
+    :hasConcept :Con_0143,
+        :Con_0144 ;
+    :prerequisiteOf :Sec_043 .
+
+:Sec_047 a :Section ;
+    rdfs:label "도함수의 활용" ;
+    :hasConcept :Con_0157,
+        :Con_0158,
+        :Con_0159,
+        :Con_0160,
+        :Con_0161,
+        :Con_0162,
+        :Con_0163 ;
     :prerequisiteOf :Sec_042 .
 
 :Sec_050 a :Section ;

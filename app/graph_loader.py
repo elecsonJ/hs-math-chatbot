@@ -40,7 +40,7 @@ def generate_schema_info(graph):
     
     schema_str = "### Ontology Schema Information ###\n\n"
     schema_str += "Prefixes:\n"
-    schema_str += "@prefix : <http://snu.ac.kr/dining/> .\n"
+    schema_str += "@prefix : <http://math.bot/ontology/> .\n"
     schema_str += "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"
     schema_str += "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
     schema_str += "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
@@ -54,7 +54,7 @@ def generate_schema_info(graph):
     SELECT DISTINCT ?cls
     WHERE {
         ?cls a owl:Class .
-        FILTER(STRSTARTS(STR(?cls), "http://snu.ac.kr/dining/"))
+        FILTER(STRSTARTS(STR(?cls), "http://math.bot/ontology/"))
     }
     """
     results = graph.query(query_classes)
@@ -75,7 +75,7 @@ def generate_schema_info(graph):
         OPTIONAL { ?prop rdfs:domain ?domain }
         OPTIONAL { ?prop rdfs:range ?range }
         OPTIONAL { ?prop rdfs:comment ?comment }
-        FILTER(STRSTARTS(STR(?prop), "http://snu.ac.kr/dining/"))
+        FILTER(STRSTARTS(STR(?prop), "http://math.bot/ontology/"))
     }
     ORDER BY ?type ?prop
     """
@@ -88,7 +88,7 @@ def generate_schema_info(graph):
         domain_name = row.domain.split("/")[-1] if row.domain else "Unknown"
         # Range might be XSD or Class
         range_str = str(row.range)
-        if "http://snu.ac.kr/dining/" in range_str:
+        if "http://math.bot/ontology/" in range_str:
              range_name = ":" + range_str.split("/")[-1]
         elif "#" in range_str:
              range_name = "xsd:" + range_str.split("#")[-1]

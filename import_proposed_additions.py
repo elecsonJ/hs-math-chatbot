@@ -7,7 +7,7 @@ INPUT_FILE = "data/report/proposed_additions.md"
 GRAPH_FILE = "data/knowledge_graph/math_abox.ttl"
 
 # Namespaces
-NS = Namespace("http://snu.ac.kr/math/")
+NS = Namespace("http://math.bot/ontology/")
 
 def import_additions():
     print(f"[INFO] Loading {GRAPH_FILE}...")

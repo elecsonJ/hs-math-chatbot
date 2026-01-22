@@ -65,19 +65,3 @@
     rdfs:domain :LearningUnit ;
     rdfs:range :LearningUnit ;
     rdfs:label "연관 관계"@ko .
-
-# -----------------------------------------------------------------------------
-# Datatype Properties (Attributes)
-# -----------------------------------------------------------------------------
-
-:grade a owl:DatatypeProperty ;
-    rdfs:domain :Subject ;
-    rdfs:range xsd:string ;
-    rdfs:label "학년/학기"@ko ;
-    rdfs:comment "교과목의 대상 학년 및 학기 (예: 1학년 1학기)" .
-
-:classification a owl:DatatypeProperty ;
-    rdfs:domain :Subject ;
-    rdfs:range xsd:string ;
-    rdfs:label "이수 구분"@ko ;
-    rdfs:comment "교과목의 이수 구분 (예: 공통, 일반선택, 진로선택)" .

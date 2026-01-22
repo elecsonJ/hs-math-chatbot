@@ -39,13 +39,13 @@ def generate_sparql(question, schema_info):
     4. **Output Goal**: Retrieve `Label`, `Subject`, `Chapter`. 
        - Use `FILTER(regex(?label, "Term1|Term2", "i"))`.
        - If the term might have synonyms, include them in the regex (e.g. "미분계수|순간변화율").
-       - **ALWAYS use the prefix**: `PREFIX : <http://snu.ac.kr/math/>`
+       - **ALWAYS use the prefix**: `PREFIX : <http://math.bot/ontology/>`
     
     ### Example 1 (High School Query)
     Question: "합성함수 미분이 뭐야?"
     Response:
     {{
-        "query": "PREFIX : <http://snu.ac.kr/math/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?targetLabel ?targetSubject ?targetChapter WHERE {{ ?target a :Concept ; rdfs:label ?targetLabel . FILTER(regex(?targetLabel, '합성함수의 미분', 'i')) OPTIONAL {{ ?targetSection :hasConcept ?target . ?targetChapNode :hasSection ?targetSection . ?targetSubNode :hasChapter ?targetChapNode . ?targetSubNode rdfs:label ?targetSubject . ?targetChapNode rdfs:label ?targetChapter . }} }}",
+        "query": "PREFIX : <http://math.bot/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?targetLabel ?targetSubject ?targetChapter WHERE {{ ?target a :Concept ; rdfs:label ?targetLabel . FILTER(regex(?targetLabel, '합성함수의 미분', 'i')) OPTIONAL {{ ?targetSection :hasConcept ?target . ?targetChapNode :hasSection ?targetSection . ?targetSubNode :hasChapter ?targetChapNode . ?targetSubNode rdfs:label ?targetSubject . ?targetChapNode rdfs:label ?targetChapter . }} }}",
         "explanation": "'합성함수의 미분'은 고교 과정에 있으므로 직접 검색합니다."
     }}
     
@@ -53,7 +53,7 @@ def generate_sparql(question, schema_info):
     Question: "테일러 급수가 너무 어려워."
     Response:
     {{
-        "query": "PREFIX : <http://snu.ac.kr/math/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?targetLabel ?targetSubject ?targetChapter WHERE {{ ?target a :Concept ; rdfs:label ?targetLabel . FILTER(regex(?targetLabel, '급수|합성함수의 미분|이계도함수', 'i')) OPTIONAL {{ ?targetSection :hasConcept ?target . ?targetChapNode :hasSection ?targetSection . ?targetSubNode :hasChapter ?targetChapNode . ?targetSubNode rdfs:label ?targetSubject . ?targetChapNode rdfs:label ?targetChapter . }} }}",
+        "query": "PREFIX : <http://math.bot/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?targetLabel ?targetSubject ?targetChapter WHERE {{ ?target a :Concept ; rdfs:label ?targetLabel . FILTER(regex(?targetLabel, '급수|합성함수의 미분|이계도함수', 'i')) OPTIONAL {{ ?targetSection :hasConcept ?target . ?targetChapNode :hasSection ?targetSection . ?targetSubNode :hasChapter ?targetChapNode . ?targetSubNode rdfs:label ?targetSubject . ?targetChapNode rdfs:label ?targetChapter . }} }}",
         "explanation": "'테일러 급수'는 온톨로지에 없으므로, 이를 이해하기 위해 필요한 고교 과정인 '급수', '합성함수의 미분', '이계도함수'를 검색합니다."
     }}
     

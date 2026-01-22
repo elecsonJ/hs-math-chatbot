@@ -7,7 +7,7 @@ INPUT_FILE = "data/raw/curr.md"
 OUTPUT_FILE = "data/knowledge_graph/math_abox.ttl"
 
 # Namespaces
-NS = Namespace("http://snu.ac.kr/math/")
+NS = Namespace("http://math.bot/ontology/")
 OWL = Namespace("http://www.w3.org/2002/07/owl#")
 
 def generate_skeleton():

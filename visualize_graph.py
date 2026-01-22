@@ -98,7 +98,7 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
     """)
 
     # 3. Define Namespaces
-    NS = rdflib.Namespace("http://snu.ac.kr/math/")
+    NS = rdflib.Namespace("http://math.bot/ontology/")
     RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#")
     RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 

@@ -8,7 +8,7 @@ HIERARCHY_FILE = "data/report/hierarchy_report.md"
 PREREQ_FILE = "data/report/prerequisites_report.md"
 
 # Namespaces
-NS = Namespace("http://snu.ac.kr/math/")
+NS = Namespace("http://math.bot/ontology/")
 
 def export_reports():
     print(f"[INFO] Loading {INPUT_FILE}...")
