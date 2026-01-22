@@ -13,7 +13,7 @@
 2.  생성 완료 후 나오는 화면에서 **"…or push an existing repository from the command line"** 부분의 코드를 복사하여 터미널에 붙여넣습니다.
 
     ```bash
-    git remote add origin https://github.com/[YOUR_USERNAME]/math_bot_proto.git
+    git remote add origin https://github.com/elecsonJ/hs-math-chatbot.git
     git branch -M main
     git push -u origin main
     ```
@@ -24,7 +24,7 @@
 
 ```bash
 # 프로젝트 클론 (다운로드)
-git clone https://github.com/[YOUR_USERNAME]/math_bot_proto.git
+git clone https://github.com/elecsonJ/hs-math-chatbot.git
 cd math_bot_proto
 
 # 가상환경 생성 및 패키지 설치
