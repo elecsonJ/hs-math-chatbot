@@ -21,6 +21,37 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
     # Normalize highlight_labels for easier matching
     if highlight_labels:
         highlight_labels = set(highlight_labels)
+        
+        # [Visual Fix] Connectivity Enhancement: Infer Parents
+        # If a Concept is highlighted, also highlight its Chapter and Subject to show connection.
+        # We need URI to query parents, so let's build a Label->URI map first.
+        label_to_uri = {}
+        for s, p, o in g.triples((None, rdflib.RDFS.label, None)):
+            label_to_uri[str(o)] = s
+            
+        # Optimization: Expand highlight_labels to include parents
+        expanded_labels = set(highlight_labels)
+        queue = list(highlight_labels)
+        
+        while queue:
+            current_lbl = queue.pop(0)
+            if current_lbl not in label_to_uri: continue
+            
+            curr_uri = label_to_uri[current_lbl]
+            
+            # Find parents: ?parent ?p ?curr_uri
+            # We are looking for structural parents (hasSection, hasChapter, hasConcept)
+            for parent in g.subjects(None, curr_uri):
+                # Check if predicate is relevant (optional, but safe to just proceed)
+                parent_lbl = g.value(parent, rdflib.RDFS.label)
+                if parent_lbl:
+                    str_parent_lbl = str(parent_lbl)
+                    if str_parent_lbl not in expanded_labels:
+                        expanded_labels.add(str_parent_lbl)
+                        queue.append(str_parent_lbl)
+        
+        highlight_labels = expanded_labels
+
     else:
         highlight_labels = set()
 
@@ -97,8 +128,6 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
     
     # Highlight Style
     highlight_style = {"color": "#FF0000", "shape": "star", "size": 35, "borderWidth": 3, "borderColor": "#000000"}
-    # [Visual Fix] Greyed out style for non-highlighted nodes
-    grey_style = {"color": "#e0e0e0", "shape": "dot", "size": 10, "font": {"color": "#cccccc"}}
 
     # print("[INFO] Processing Nodes...")
     existing_nodes = set()
@@ -111,14 +140,10 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         group = get_group(s)
         
         # Determine Style
-        if highlight_labels:
-            # We are in Focus Mode
-            if lbl in highlight_labels:
-                style = highlight_style
-            else:
-                style = grey_style
+        # [Visual Update] Only change highlighted nodes. Others stay ORIGINAL.
+        if highlight_labels and lbl in highlight_labels:
+            style = highlight_style
         else:
-            # Normal Mode
             style = styles.get(group, styles["Other"])
         
         # Tooltip
@@ -135,7 +160,7 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         else:
             extra_args["color"] = style["color"]
         
-        # Font color override for grey nodes
+        # Font color override (removed grey font logic)
         if "font" in style:
             extra_args["font"] = style["font"]
 
@@ -156,13 +181,21 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         
         if prop_name == "type": continue
         
-        # Default Visual Style for Edges
+        # Default Visual Style for Edges (Original Logic)
         width = 1
         edge_color = "#bdbdbd"
         dashes = False
         
+        # Base Semantic Coloring (Always apply this first)
+        if "prerequisiteOf" in prop_name:
+            edge_color = "#FF4040" # Red for prerequisite
+            width = 2
+        elif "has" in prop_name:
+            edge_color = "#848484" # Darker Grey for hierarchy
+            width = 3
+
+        # Highlight Logic: Only emphasize "Strong" connections
         if highlight_labels:
-            # Focus Mode Logic
             s_lbl = get_label(s)
             o_lbl = get_label(o)
             
@@ -171,33 +204,16 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
             
             if s_high and o_high:
                 # [Strong] Connection between two relevant nodes
-                # Preserve semantic colors but make them pop
+                # Make them pop (Overriding slightly to be very bold)
+                width = 4 # Even thicker
                 if "prerequisiteOf" in prop_name:
                     edge_color = "#FF0000" # Bright Red
-                    width = 3
                 elif "has" in prop_name:
-                    edge_color = "#555555" # Dark Grey
-                    width = 3
+                    edge_color = "#000000" # Pitch Black for hierarchy
                 else:
                     edge_color = "#000000"
-                    width = 2
-            elif s_high or o_high:
-                # [Context] Connection to a relevant node
-                edge_color = "#aaaaaa" # Visible Medium Grey
-                width = 1
-                dashes = True # Dotted line for context
-            else:
-                # [Dimmed] Background noise
-                edge_color = "#eeeeee" # Very Light Grey (barely visible to reduce clutter)
-                width = 1
-        else:
-            # Standard Mode (No Highlight)
-            if "prerequisiteOf" in prop_name:
-                edge_color = "#FF4040" 
-                width = 2
-            elif "has" in prop_name:
-                edge_color = "#848484" 
-                width = 3
+            
+            # [Reverted] No dimming for others. They keep the Base Semantic Coloring defined above.
 
         net.add_edge(str_s, str_o, title=prop_name, color=edge_color, width=width, dashes=dashes)
 

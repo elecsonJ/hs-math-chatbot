@@ -108,24 +108,9 @@ if prompt := st.chat_input("Ask a math question..."):
     # User Message
     st.session_state.chat_history.append({"role": "user", "content": prompt})
     
-    # We need to rerun to show the user's message in the container immediately? 
-    # Or just write to the container now.
-    # Writing to container directly is tricky if we want to redraw the whole history.
-    # Standard Streamlit pattern is to rerun, but we want to execute logic first.
-    
-    # Force redraw of chat by rerunning? No, standard pattern:
-    # 1. Append to history
-    # 2. Rerun triggers top-down run -> shows history.
-    # 3. BUT we are inside the 'if prompt' block, so we need to run logic.
-    
-    # Correct Pattern:
-    # 1. Append user msg.
-    # 2. Display user msg (optional, but good for immediate feedback).
-    # 3. Run Logic.
-    # 4. Append ai msg.
-    # 5. Rerun.
-    
-    # Since we moved chat loop to top, let's just run logic and then RERUN.
+    # [UX Fix] Display user message IMMEDIATELY before processing
+    with st.chat_message("user"):
+        st.markdown(prompt)
     
     # Thinking...
     with st.spinner("Analyzing Ontology..."):
