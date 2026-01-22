@@ -7,6 +7,14 @@ import rdflib
 # Add 'app' directory to path to import reasoning_engine
 sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 
+# [Cloud Fix] Inject Secrets to Environment for reasoning_engine.py
+# Streamlit Cloud uses st.secrets, but our engine checks os.getenv
+try:
+    if "GOOGLE_API_KEY" in st.secrets:
+        os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+except FileNotFoundError:
+    pass # Running locally with .env
+
 from reasoning_engine import generate_sparql, execute_sparql, generate_answer
 from graph_loader import load_graph, generate_schema_info
 
