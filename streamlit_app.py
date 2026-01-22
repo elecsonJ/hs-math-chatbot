@@ -58,28 +58,22 @@ if "viz_html" not in st.session_state:
 
 # Sidebar
 with st.sidebar:
-    st.header("🤖 Math Bot Config")
-    st.write("Ontology grounded high school math tutor.")
+    st.header("🗺️ Ontology Map")
     
-    if st.button("Reload Knowledge Graph"):
-        st.session_state.graph_loaded = False
+    # Simple Reset Button
+    if st.button("Reset View"):
         st.session_state.viz_html = None # Reset visualization
-        st.experimental_rerun()
+        st.rerun()
 
-    st.divider()
-    st.subheader("Visualization")
-    
-    # Priority: 1. Dynamic HTML (from session), 2. Static File
+    # Visualization
     if st.session_state.viz_html:
-        st.components.v1.html(st.session_state.viz_html, height=300, scrolling=True)
-        st.caption("Dynamic Context Visualization")
+        st.components.v1.html(st.session_state.viz_html, height=700, scrolling=True)
     elif os.path.exists(VISUALIZATION_PATH):
         with open(VISUALIZATION_PATH, 'r', encoding='utf-8') as f:
             html_data = f.read()
-        st.components.v1.html(html_data, height=300, scrolling=True)
-        st.caption("Mini-map of the Ontology")
+        st.components.v1.html(html_data, height=700, scrolling=True)
     else:
-        st.error("Visualization file not found.")
+        st.info("Visualization loading...")
 
 # Main Load Logic
 @st.cache_resource
@@ -99,22 +93,40 @@ except Exception as e:
 
 # Title
 st.title("📐 Math Ontology Chatbot")
-st.caption("Ask about High School Math concepts! (e.g. 'Taylor Series', 'Calculus Prerequisites')")
 
-# Chat UI
+# Chat UI - Main Area
+# Chat History
 for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
         if "evidence" in msg and msg["evidence"]:
-            with st.expander("🔍 Evidence (Used Concepts)"):
+            with st.expander("🔍 Evidence"):
                 st.json(msg["evidence"])
 
+# Chat Input (Pinned to bottom)
 if prompt := st.chat_input("Ask a math question..."):
     # User Message
     st.session_state.chat_history.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
+    
+    # We need to rerun to show the user's message in the container immediately? 
+    # Or just write to the container now.
+    # Writing to container directly is tricky if we want to redraw the whole history.
+    # Standard Streamlit pattern is to rerun, but we want to execute logic first.
+    
+    # Force redraw of chat by rerunning? No, standard pattern:
+    # 1. Append to history
+    # 2. Rerun triggers top-down run -> shows history.
+    # 3. BUT we are inside the 'if prompt' block, so we need to run logic.
+    
+    # Correct Pattern:
+    # 1. Append user msg.
+    # 2. Display user msg (optional, but good for immediate feedback).
+    # 3. Run Logic.
+    # 4. Append ai msg.
+    # 5. Rerun.
+    
+    # Since we moved chat loop to top, let's just run logic and then RERUN.
+    
     # Thinking...
     with st.spinner("Analyzing Ontology..."):
         # 1. Reasoning
@@ -135,12 +147,10 @@ if prompt := st.chat_input("Ask a math question..."):
         if evidence_data:
             highlight_nodes = []
             for item in evidence_data:
-                # Add Concept/Subject/Chapter labels to highlight list
                 if item.get("concept"): highlight_nodes.append(item["concept"])
                 if item.get("chapter"): highlight_nodes.append(item["chapter"])
                 if item.get("subject"): highlight_nodes.append(item["subject"])
             
-            # Generate new HTML with highlights
             try:
                 new_html = visualize_ontology(graph=full_graph, highlight_labels=highlight_nodes, return_html_str=True)
                 st.session_state.viz_html = new_html
@@ -154,12 +164,4 @@ if prompt := st.chat_input("Ask a math question..."):
         "evidence": evidence_data
     })
     
-    with st.chat_message("assistant"):
-        st.markdown(answer_text)
-        if evidence_data:
-            with st.expander("🔍 Evidence (Ontology Trace)"):
-                st.table(evidence_data) # Use Table for cleaner view than JSON
-                st.caption(f"Logic: {sparql_res.get('explanation', '')}")
-            
-    # Rerun to update sidebar immediately
     st.rerun()

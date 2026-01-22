@@ -26,9 +26,11 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
 
     # 2. Init Pyvis Network (Style: White Background like the Notebook)
     # cdn_resources='in_line' embeds the scripts into the HTML, making it standalone (fixes CDN/CORS issues)
-    net = Network(height="800px", width="100%", bgcolor="#ffffff", font_color="black", select_menu=True, directed=True, cdn_resources="in_line")
+    # [Visual Fix] Disable select_menu to remove "Select by ID" dropdown
+    net = Network(height="800px", width="100%", bgcolor="#ffffff", font_color="black", select_menu=False, directed=True, cdn_resources="in_line")
     
     # Notebook specific options injection
+    # [Visual Fix] Tweak physics for stability (stop floating)
     net.set_options("""
     var options = {
       "physics": {
@@ -39,14 +41,18 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
           "centralGravity": 0.01,
           "springLength": 100,
           "springConstant": 0.08,
-          "damping": 1.0,
+          "damping": 0.9,
           "avoidOverlap": 0
         },
         "stabilization": {
             "enabled": true,
-            "iterations": 200,
-            "updateInterval": 25
-        }
+            "iterations": 1000,
+            "updateInterval": 25,
+            "onlyDynamicEdges": false,
+            "fit": true
+        },
+        "minVelocity": 0.75,
+        "maxVelocity": 30
       },
       "nodes": {
         "shadow": {
@@ -91,6 +97,8 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
     
     # Highlight Style
     highlight_style = {"color": "#FF0000", "shape": "star", "size": 35, "borderWidth": 3, "borderColor": "#000000"}
+    # [Visual Fix] Greyed out style for non-highlighted nodes
+    grey_style = {"color": "#e0e0e0", "shape": "dot", "size": 10, "font": {"color": "#cccccc"}}
 
     # print("[INFO] Processing Nodes...")
     existing_nodes = set()
@@ -103,10 +111,14 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         group = get_group(s)
         
         # Determine Style
-        if lbl in highlight_labels:
-            style = highlight_style
-            # print(f"Highlighting node: {lbl}")
+        if highlight_labels:
+            # We are in Focus Mode
+            if lbl in highlight_labels:
+                style = highlight_style
+            else:
+                style = grey_style
         else:
+            # Normal Mode
             style = styles.get(group, styles["Other"])
         
         # Tooltip
@@ -122,6 +134,10 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
             extra_args["color"] = {"background": style["color"], "border": style.get("borderColor", "black")}
         else:
             extra_args["color"] = style["color"]
+        
+        # Font color override for grey nodes
+        if "font" in style:
+            extra_args["font"] = style["font"]
 
         net.add_node(str_s, label=lbl, title=title, 
                      shape=style["shape"], size=style["size"], group=group, **extra_args)
@@ -145,16 +161,29 @@ def visualize_ontology(graph=None, highlight_labels=None, output_file="math_grap
         edge_color = "#bdbdbd"
         dashes = False
         
-        # Highlight Logic for Edges? 
-        # Optional: if both nodes are highlighted, highlight edge too?
-        # For now, keep edge styles simple to avoid clutter
+        if highlight_labels:
+            # In Focus Mode, dim edges that are not connecting two highlighted nodes?
+            # Or at least dim edges connected to grey nodes.
+            # Simple heuristic: if either source or target is NOT highlighted, dim the edge.
+            s_lbl = get_label(s)
+            o_lbl = get_label(o)
+            
+            if s_lbl in highlight_labels and o_lbl in highlight_labels:
+                # Keep original color/stronger
+                pass 
+            else:
+                # Dim it
+                edge_color = "#f0f0f0"
+                width = 1
         
-        if "prerequisiteOf" in prop_name:
-            edge_color = "#FF4040" # Red for prerequisite
-            width = 2
-        elif "has" in prop_name:
-            edge_color = "#848484" # Darker Grey for hierarchy
-            width = 3
+        # Override original logic only if NOT dimmed, or apply color only if relevant
+        if edge_color != "#f0f0f0":
+            if "prerequisiteOf" in prop_name:
+                edge_color = "#FF4040" # Red for prerequisite
+                width = 2
+            elif "has" in prop_name:
+                edge_color = "#848484" # Darker Grey for hierarchy
+                width = 3
 
         net.add_edge(str_s, str_o, title=prop_name, color=edge_color, width=width, dashes=dashes)
 

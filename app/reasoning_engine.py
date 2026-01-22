@@ -34,9 +34,12 @@ def generate_sparql(question, schema_info):
     3. **Out-of-Curriculum Detection (NEW)**:
        - If the user asks about a concept that is NOT in the High School curriculum:
        - **You MUST include the exact phrase "OUT_OF_CURRICULUM" in your `explanation` field.**
-       - Even if it's out of curriculum, still provide the SPARQL query for relevant high school prerequisites to be helpful.
-
-    4. **Output Goal**: Retrieve `Label`, `Subject`, `Chapter`. Use `FILTER(regex(?label, "Term1|Term2", "i"))`.
+       - **CRITICAL**: You MUST still generate a SPARQL query to retrieve relevant high school prerequisites. Do NOT return an empty query.
+    
+    4. **Output Goal**: Retrieve `Label`, `Subject`, `Chapter`. 
+       - Use `FILTER(regex(?label, "Term1|Term2", "i"))`.
+       - If the term might have synonyms, include them in the regex (e.g. "미분계수|순간변화율").
+       - **ALWAYS use the prefix**: `PREFIX : <http://snu.ac.kr/math/>`
     
     ### Example 1 (High School Query)
     Question: "합성함수 미분이 뭐야?"
@@ -108,18 +111,26 @@ def generate_answer(question, raw_data, sparql_explanation):
     ### Instructions
     1. **Analyze**: Carefully evaluate the retrieved data (Concepts, Prerequisites, etc.) and the provided Logic string.
     
-    2. **Curriculum Check (CRITICAL)**:
-       - If the `Logic` string contains the phrase "OUT_OF_CURRICULUM":
-       - **The very first sentence of your 'answer' MUST be exactly: "교육과정 외의 내용입니다."**
-       - Following that sentence, kindly explain why the concept belongs to an advanced/university curriculum and how the retrieved high school prerequisites are related to it.
-    
+    2. **Scope & Ambiguity Check (CRITICAL)**:
+       - **Case A: Out of Curriculum** (Logic contains "OUT_OF_CURRICULUM"):
+         - Start answer with: "교육과정 외의 내용입니다."
+         - Explain that the concept is advanced and link it to the retrieved High School prerequisites.
+         - **MUST provide the 'evidence' list** containing those prerequisites.
+       
+       - **Case B: Concept Ambiguity** (Same Name, Different Depth):
+         - If the user asks about a concept (e.g., "Continuous Probability Distribution", "Matrix") that exists in High School but implies a University-level depth (e.g., "Is this all?", "General definition"):
+         - **Do NOT** simply say "Study the high school version."
+         - Explicitly clarify: "고등학교 과정에서는 ~만 다루지만, 대학 과정에서는 ~까지 확장됩니다." (Distinguish the scope).
+         - Then, guide them to the High School concepts available in the ontology.
+
     3. **Answer Style & Language**: 
        - **Language**: Write the entire 'answer' in **Korean**.
        - **Tone**: Maintain an encouraging, empathetic, and helpful mentor persona.
-       - **Guidance**: Even if the direct answer is not in the data, use the `Retrieved Knowledge` to suggest which high school foundations the student should review first.
+       - **Guidance**: Use the `Retrieved Knowledge` to suggest which high school foundations the student should review.
     
     4. **Evidence Construction**:
        - Create an 'evidence' list based strictly on the 'Retrieved Knowledge'.
+       - **IMPORTANT**: Even if the concept is "Out of Curriculum" or "Ambiguous", you MUST list the retrieved related concepts in `evidence` so they can be visualized.
        - Map the data to: subject, chapter, concept, and desc (short reason for relevance).
        - If hierarchy info (subject/chapter) is missing, infer it from the context or use "Unknown".
        
