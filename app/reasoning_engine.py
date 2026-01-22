@@ -125,6 +125,7 @@ def generate_answer(question, raw_data, sparql_explanation):
 
     3. **Answer Style & Language**: 
        - **Language**: Write the entire 'answer' in **Korean**.
+       - **Terminology Replacement**: ALWAYS replace "수학I" with "대수" and "수학II" with "미적분1" in your response.
        - **Tone**: Maintain an encouraging, empathetic, and helpful mentor persona.
        - **Guidance**: Use the `Retrieved Knowledge` to suggest which high school foundations the student should review.
     
